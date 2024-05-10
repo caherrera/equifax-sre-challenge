@@ -1,0 +1,103 @@
+---
+- name: Actualizar el sistema
+  apt:
+    upgrade: yes
+    update_cache: yes
+
+- name: Instalar software-properties-common
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: Instalar curl
+  apt:
+    name: curl
+    state: present
+
+- name: Agregar repositorio PHP y actualizar
+  apt_repository:
+    repo: ppa:ondrej/php
+    update_cache: yes
+
+- name: Instalar PHP 8.3 y extensiones requeridas
+  apt:
+    name:
+      - php8.3-fpm
+      - php8.3-cli
+      - php8.3-dev
+      - php8.3-gd
+      - php8.3-imagick
+      - php8.3-curl
+      - php8.3-mysql
+      - php8.3-mbstring
+      - php8.3-xml
+      - php8.3-zip
+      - php8.3-bcmath
+      - php8.3-soap
+    state: present
+
+- name: download composer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/installer
+  tags: composer
+
+- name: Install composer
+  shell: cat /tmp/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  args:
+    creates: /usr/local/bin/composer
+  tags: composer
+
+- name: Instalar Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Configurar Nginx
+  copy:
+    src: wordpress.conf
+    dest: /etc/nginx/sites-available/wordpress.conf
+    owner: root
+    group: root
+    mode: '0600'
+
+
+- name: Habilitar sitio en nginx
+  file:
+    src: /etc/nginx/sites-available/wordpress.conf
+    dest: /etc/nginx/sites-enabled/wordpress.conf
+    state: link
+
+- name: "UFW - Allow HTTP"
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+  tags: [ system ]
+
+- name: Eliminar default site nginx
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Instalar wordpress
+  unarchive:
+    src: latest-es_CL.tar.gz
+    dest: /var/www
+    creates: "/var/www/wordpress"
+    owner: www-data
+    group: www-data
+    mode: 0750
+
+- name: Crear directorio wp-content
+  file:
+    path: /var/www/wordpress/wp-content
+    state: directory
+    mode: 0750
+
+- name: permisos directorio
+  shell: "/usr/bin/find /var/www/wordpress/ -type d -exec chmod 750 {} \\;"
+
+- name: Permisos archivos
+  shell: "/usr/bin/find /var/www/wordpress/ -type f -exec chmod 640 {} \\;"
+
