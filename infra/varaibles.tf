@@ -17,3 +17,13 @@ variable "environment" {
   description = "The environment to deploy to"
   default     = "dev"
 }
+
+variable "az_count" {
+  description = "Number of AZs to cover in a given AWS region"
+  default     = 2
+}
+
+variable "ami" {
+  description = "The AMI to use for the EC2 instances"
+  default     = "wordpress-ubuntu"
+}

@@ -4,15 +4,20 @@ locals {
   alb_logs_bucket = "${local.alb_prefix}-logs"
   sg_name_svc     = "${local.ec2_prefix}-svc-sg"
   sg_name_lb      = "${local.ec2_prefix}-lb-sg"
+  ami             = var.ami == "" ? "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" : var.ami
+  ami_owner       = var.ami == "" ? "099720109477" : data.aws_caller_identity.current.account_id
 
 }
 
-data "aws_ami" "ubuntu" {
+data "aws_caller_identity" "current" {}
+
+
+data "aws_ami" "ami" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = [local.ami]
   }
 
   filter {
@@ -20,33 +25,70 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # ID del propietario de la AMI oficial de Ubuntu en AWS
+  owners = [local.ami_owner]
 }
 
 
-resource "aws_instance" "wp" {
-  count         = length(var.subnet_ids)
-  ami           = var.ami
+resource "aws_launch_template" "lt_wp" {
+  name_prefix   = var.name
+  image_id      = data.aws_ami.ami.image_id
   instance_type = var.instance_type
   key_name      = var.key_pair
-  subnet_id     = var.subnet_ids[count.index]
+
+  network_interfaces {
+    associate_public_ip_address = false
+    delete_on_termination       = true
+    security_groups             = [
+      aws_security_group.http-sg.id,
+    ]
+  }
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
+
+  monitoring {
+    enabled = true
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = var.name
+    }
+  }
+
+  depends_on = [aws_security_group.http-sg]
+
 }
 
-
-resource "aws_launch_template" "foobar" {
-  name_prefix   = var.name
-  image_id      = data.aws_ami.ubuntu.image_id
-  instance_type = "t2.micro"
-}
-
-resource "aws_autoscaling_group" "bar" {
-  availability_zones = var.availability_zones
-  desired_capacity   = 1
-  max_size           = 1
-  min_size           = 1
+resource "aws_autoscaling_group" "asg_wp" {
+  name                      = "${var.name}-asg"
+  availability_zones        = var.availability_zones
+  desired_capacity          = var.desired_capacity
+  max_size                  = var.max_size
+  min_size                  = var.min_size
+  target_group_arns         = [aws_alb_target_group.target_group.arn]
+  health_check_grace_period = 300
+  termination_policies      = ["OldestInstance"]
 
   launch_template {
-    id      = aws_launch_template.foobar.id
+    id      = aws_launch_template.lt_wp.id
     version = "$Latest"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_lifecycle_hook" "asg_lifecycle_hook" {
+  name                   = "${aws_autoscaling_group.asg_wp.name}-lifecycle-hook"
+  autoscaling_group_name = aws_autoscaling_group.asg_wp.name
+  lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
+  heartbeat_timeout      = 300
+  default_result         = "CONTINUE"
 }

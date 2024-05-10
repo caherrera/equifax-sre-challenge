@@ -4,7 +4,7 @@ resource "aws_security_group" "app" {
 
   vpc_id = var.vpc_id
   name   = local.sg_name_lb
-  tags   = { Name = local.sg_name_lb }
+  tags = { Name = local.sg_name_lb }
 
   ingress {
     protocol    = "tcp"
@@ -32,12 +32,12 @@ resource "aws_security_group" "app" {
 resource "aws_security_group" "http-sg" {
   vpc_id      = var.vpc_id
   name        = "${var.name}-http-sg"
-  tags        = { Name = "${var.name}-http-sg" }
+  tags = { Name = "${var.name}-http-sg" }
   description = "APP Service sg"
   ingress {
     from_port       = var.port
     to_port         = var.port
-    protocol        = "tcp"
+    protocol = "tcp"
     # Only allowing traffic in from the load balancer security group
     security_groups = [aws_security_group.app.id]
   }
@@ -45,32 +45,6 @@ resource "aws_security_group" "http-sg" {
 
   lifecycle {
     create_before_destroy = true
-  }
-}
-
-
-# SSH EC2
-resource "aws_security_group" "ssh-sg" {
-  description = "controls SSH access"
-
-  vpc_id = var.vpc_id
-  name   = "${var.name} SSH Security Group"
-  tags   = { Name = "${var.name}-ssh-sg" }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-
   }
 }
 

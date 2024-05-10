@@ -35,7 +35,7 @@ variable "vpc_id" {
 
 variable "port" {
   description = "The port on which the application/service should run."
-  default     = 8000
+  default     = 80
   type        = number
 }
 
@@ -73,4 +73,26 @@ variable "route53_zone_id" {
   description = "zone_id"
   default     = ""
   type        = string
+}
+
+variable "desired_capacity" {
+  description = "Auto Scaling Group Desired Capacity"
+  default     = 1
+  type        = number
+}
+variable "max_size" {
+  description = "Auto Scaling Group Max Size"
+  default     = 1
+  type        = number
+}
+variable "min_size" {
+  description = "Auto Scaling Group Min Size"
+  default     = 1
+  type        = number
+}
+
+variable "security_groups" {
+  description = "List of security group IDs to associate with the instance."
+  default     = []
+  type        = list(string)
 }

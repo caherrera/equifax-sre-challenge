@@ -1,7 +1,7 @@
 data "aws_availability_zones" "available" {}
 
 locals {
-  azs    = slice(data.aws_availability_zones.available.names, 0, 2)
+  azs    = slice(data.aws_availability_zones.available.names, 0, var.az_count)
   vpc_id = coalesce(module.networking.vpc_id, module.networking.default_vpc_id)
 }
 
@@ -11,4 +11,4 @@ module "networking" {
   name   = var.name
 }
 
-output "availability_zones" { value = local.azs }
+
