@@ -33,28 +33,6 @@ build {
     "source.amazon-ebs.ubuntu"
   ]
 
-  #   provisioner "file" {
-  #     source      = "roles"
-  #     destination = "/tmp/roles"
-  #   }
-  #   provisioner "file" {
-  #     source      = "playbook.yml"
-  #     destination = "/tmp/playbook.yml"
-  #   }
-  #
-  #   provisioner "file" {
-  #     source      = "hosts.ini"
-  #     destination = "/tmp/hosts.ini"
-  #   }
-  #
-  #   provisioner "shell" {
-  #     inline = [
-  #       "sudo apt-get update",
-  #       "sudo apt-get install -y ansible",
-  #       "cd /tmp",
-  #     ]
-  #   }
-
   provisioner "ansible" {
     playbook_file = "playbook.yml"
 #     user          = "/"
