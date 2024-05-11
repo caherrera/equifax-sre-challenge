@@ -6,12 +6,10 @@
 
 - name: Instalar software-properties-common
   apt:
-    name: software-properties-common
-    state: present
-
-- name: Instalar curl
-  apt:
-    name: curl
+    name: 
+      - software-properties-common
+      - nfs-common 
+      - curl
     state: present
 
 - name: Agregar repositorio PHP y actualizar
