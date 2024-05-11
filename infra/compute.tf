@@ -10,7 +10,7 @@ module "compute" {
   source             = "./modules/compute"
   key_pair           = aws_key_pair.carlos-key.key_name
   name               = var.name
-  subnet_ids         = module.networking.private_subnet_ids
+  subnet_ids         = module.networking.public_subnet_ids
   vpc_id             = local.vpc_id
   hostname           = local.host
   availability_zones = local.availability_zones

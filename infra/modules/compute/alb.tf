@@ -20,7 +20,7 @@ resource "aws_alb_target_group" "target_group" {
 
   health_check {
     interval            = 30
-    path                = "/index.html"
+    path                = "/"
     port                = 80
     healthy_threshold   = 5
     unhealthy_threshold = 2
