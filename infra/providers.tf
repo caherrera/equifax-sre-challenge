@@ -1,4 +1,12 @@
 terraform {
+  backend "remote" {
+    organization = "carlos-herrera"
+    workspaces {
+      name = "equifax-aws"
+      
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
