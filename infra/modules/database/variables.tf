@@ -42,22 +42,12 @@ variable "engine" {
   default     = "postgres"
 }
 
-variable "engine_version" {
-  description = "The version of the engine to use for the RDS cluster"
-  type        = string
-  default     = "16.1"
-}
+
 
 variable "database_name" {
   description = "The name of the database in the RDS cluster"
   type        = string
   default     = "wordpress"
-}
-
-variable "major_engine_version" {
-  description = "The major version of the engine to use for the RDS cluster"
-  type        = string
-  default     = "16.1"
 }
 
 variable "instance_class" {

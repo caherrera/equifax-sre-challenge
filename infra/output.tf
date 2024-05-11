@@ -22,11 +22,9 @@ output "default_security_group_id" {
   value = data.aws_security_group.default.id
 }
 
-output "database_secret_creds" {
-  value = aws_secretsmanager_secret.database_password.name
-}
-
-
 output "database" {
-  value = module.database.endpoint
+  value = {
+    secret_id = aws_secretsmanager_secret.database_password.id,
+    address   = module.database.address
+  }
 }

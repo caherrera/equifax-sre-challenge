@@ -7,6 +7,6 @@ output "security_group" {
 
 }
 
-# output "alb" {
-#   value = aws_lb.app[0]
-# }
+output "alb" {
+  value = aws_alb.app[0].dns_name
+}

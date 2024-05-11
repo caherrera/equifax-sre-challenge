@@ -5,6 +5,7 @@ module "database" {
   subnet_group_name        = module.networking.database_subnet_group
   source_security_group_id = aws_security_group.data-sg.id
   environment              = var.environment
+  engine                   = "mysql"
 
 }
 
@@ -19,7 +20,7 @@ resource "aws_secretsmanager_secret_version" "database_password" {
   secret_string = jsonencode({
     username = module.database.database_username
     password = module.database.database_password
-    host     = module.database.endpoint
+    host     = module.database.address
     port     = module.database.port
   })
 }

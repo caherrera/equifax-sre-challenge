@@ -18,12 +18,12 @@ output "database_name" {
   value = var.database_name
 }
 
-output "endpoint" {
-  value = aws_db_instance.master.endpoint
+output "address" {
+  value = aws_db_instance.master.address
 }
 
-output "replicas_endpoint" {
-  value = aws_db_instance.replica[*].endpoint
+output "replicas_addresses" {
+  value = aws_db_instance.replica[*].address
 }
 
 

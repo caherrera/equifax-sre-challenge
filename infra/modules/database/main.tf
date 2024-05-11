@@ -15,6 +15,7 @@ resource "aws_db_instance" "master" {
   engine                  = var.engine
   allocated_storage       = var.allocated_storage
   instance_class          = var.instance_class
+  db_name                 = var.db_name
   username                = var.username
   password                = local.password
   db_subnet_group_name    = var.subnet_group_name
