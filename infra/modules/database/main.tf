@@ -5,46 +5,52 @@ resource "random_password" "password" {
 }
 
 locals {
-  password          = coalesce(var.password, random_password.password.result)
-  identifier_master = "${var.name}-master"
+  password               = coalesce(var.password, random_password.password.result)
+  vpc_security_group_ids = concat([aws_security_group.rds_sg.id], var.security_groups)
 }
 
-resource "aws_db_instance" "default" {
-  allocated_storage      = 10
-  db_name                = var.db_name
-  engine                 = var.engine
-  engine_version         = var.engine_version
+
+resource "aws_db_instance" "master" {
+  identifier              = "${var.identifier}-master"
+  engine                  = var.engine
+  allocated_storage       = var.allocated_storage
+  instance_class          = var.instance_class
+  username                = var.username
+  password                = local.password
+  db_subnet_group_name    = var.subnet_group_name
+  vpc_security_group_ids  = local.vpc_security_group_ids
+  availability_zone       = var.availability_zones[0]
+  skip_final_snapshot     = true
+  apply_immediately       = true
+  publicly_accessible     = false
+  backup_retention_period = 7
+
+
+  timeouts {
+    create = "3h"
+    delete = "3h"
+    update = "3h"
+  }
+
+}
+
+resource "aws_db_instance" "replica" {
+  count                  = var.replica_count
+  identifier             = "${var.identifier}-${format("s%02d", count.index)}"
   instance_class         = var.instance_class
-  username               = var.username
-  password               = local.password
-  parameter_group_name   = var.parameter_group_name
+  replicate_source_db    = aws_db_instance.master.identifier
+  availability_zone      = var.availability_zones[count.index+1]
   skip_final_snapshot    = true
-  identifier             = local.identifier_master
-  db_subnet_group_name   = aws_db_subnet_group.private.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  depends_on             = [aws_db_instance.master]
+  apply_immediately      = true
+  publicly_accessible    = false
+  vpc_security_group_ids = local.vpc_security_group_ids
 
-
-}
-
-resource "aws_db_subnet_group" "private" {
-  name       = "${var.name}-priv_subnet_group"
-  subnet_ids = var.subnet_ids
-}
-
-resource "aws_security_group" "rds_sg" {
-  name        = "sg-${var.name}-allow-mysql"
-  description = "Allow MYSQL inbound traffic"
-  vpc_id      = var.vpc_id
-  ingress {
-    from_port = 3306
-    to_port   = 3306
-    protocol  = "tcp"
+  timeouts {
+    create = "3h"
+    delete = "3h"
+    update = "3h"
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
+

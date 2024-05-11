@@ -22,7 +22,7 @@ output "private_cidrs" {
 }
 
 output "database_subnet_group" {
-  value = aws_db_subnet_group.database
+  value = aws_db_subnet_group.database.id
 }
 
 output "database_subnet_ids" {

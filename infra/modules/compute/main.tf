@@ -38,9 +38,9 @@ resource "aws_launch_template" "lt_wp" {
   network_interfaces {
     associate_public_ip_address = false
     delete_on_termination       = true
-    security_groups             = [
+    security_groups             = concat([
       aws_security_group.http-sg.id,
-    ]
+    ], var.security_groups)
   }
 
   metadata_options {
