@@ -7,7 +7,7 @@ resource "aws_alb" "app" {
   load_balancer_type = "application"
   internal           = false
   name               = local.alb_prefix
-  subnets            = var.subnet_ids
+  subnets            = var.alb_subnet_ids
   security_groups    = [aws_security_group.app.id]
 
 }

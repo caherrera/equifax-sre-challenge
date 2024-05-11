@@ -1,3 +1,8 @@
+variable "environment" {
+  description = "The environment in which the resources are being created."
+  type        = string
+}
+
 variable "availability_zones" {
   description = "A list of availability zones to use."
   type        = list(string)
@@ -23,7 +28,17 @@ variable "key_pair" {
   type        = string
 }
 
-variable "subnet_ids" {
+variable "alb_subnet_ids" {
+  description = "A list of subnet IDs to associate with."
+  type        = list(string)
+}
+
+variable "instances_subnet_ids" {
+  description = "A list of subnet IDs to associate with."
+  type        = list(string)
+}
+
+variable "efs_subnet_ids" {
   description = "A list of subnet IDs to associate with."
   type        = list(string)
 }
@@ -96,3 +111,4 @@ variable "security_groups" {
   default     = []
   type        = list(string)
 }
+

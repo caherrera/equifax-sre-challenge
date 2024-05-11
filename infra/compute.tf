@@ -7,19 +7,21 @@ locals {
 }
 
 module "compute" {
-  source             = "./modules/compute"
-  key_pair           = aws_key_pair.carlos-key.key_name
-  name               = var.name
-  subnet_ids         = module.networking.public_subnet_ids
-  vpc_id             = local.vpc_id
-  hostname           = local.host
-  availability_zones = local.availability_zones
-  ami                = var.ami
-  max_size           = var.az_count * 2
-  min_size           = var.az_count
-  desired_capacity   = var.az_count
-  security_groups    = [data.aws_security_group.default.id, aws_security_group.data-sg.id]
-
+  source               = "./modules/compute"
+  key_pair             = aws_key_pair.carlos-key.key_name
+  name                 = var.name
+  alb_subnet_ids       = module.networking.public_subnet_ids
+  instances_subnet_ids = module.networking.private_subnet_ids
+  efs_subnet_ids       = module.networking.database_subnet_ids
+  vpc_id               = local.vpc_id
+  hostname             = local.host
+  availability_zones   = local.availability_zones
+  ami                  = var.ami
+  max_size             = var.az_count * 2
+  min_size             = var.az_count
+  desired_capacity     = var.az_count
+  security_groups      = [data.aws_security_group.default.id, aws_security_group.data-sg.id]
+  environment          = var.environment
 }
 
 
