@@ -7,6 +7,8 @@ resource "random_password" "password" {
 locals {
   password               = coalesce(var.password, random_password.password.result)
   vpc_security_group_ids = concat([aws_security_group.rds_sg.id], var.security_groups)
+  identifier_master      = "${var.identifier}-master"
+
 }
 
 

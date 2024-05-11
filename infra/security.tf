@@ -14,6 +14,14 @@ resource "aws_security_group" "data-sg" {
     Name = "${var.name}-data-sg"
   }
 
+  # Allow all outbound traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   lifecycle {
     create_before_destroy = true
   }
