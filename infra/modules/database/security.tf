@@ -4,6 +4,10 @@ resource "aws_security_group" "rds_sg" {
   vpc_id                 = var.vpc_id
   revoke_rules_on_delete = true
 
+  tags = {
+    Name = "${var.identifier}-in-rds"
+  }
+
   ingress {
     from_port       = var.port
     to_port         = var.port

@@ -65,24 +65,39 @@ resource "aws_launch_template" "lt_wp" {
 
 }
 
+resource "aws_placement_group" "pg_wp" {
+  name     = "${var.name}-pg"
+  strategy = "cluster"
+}
+
 resource "aws_autoscaling_group" "asg_wp" {
   name                      = "${var.name}-asg"
-  availability_zones        = var.availability_zones
   desired_capacity          = var.desired_capacity
   max_size                  = var.max_size
   min_size                  = var.min_size
+  placement_group           = aws_placement_group.pg_wp.name
   target_group_arns         = [aws_alb_target_group.target_group.arn]
   health_check_grace_period = 300
   termination_policies      = ["OldestInstance"]
+  vpc_zone_identifier       = var.instances_subnet_ids
 
   launch_template {
     id      = aws_launch_template.lt_wp.id
     version = "$Latest"
   }
 
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+    triggers = ["tag"]
+  }
+
   lifecycle {
     create_before_destroy = true
   }
+
 }
 
 resource "aws_autoscaling_lifecycle_hook" "asg_lifecycle_hook" {

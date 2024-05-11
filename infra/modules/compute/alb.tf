@@ -7,7 +7,7 @@ resource "aws_alb" "app" {
   load_balancer_type = "application"
   internal           = false
   name               = local.alb_prefix
-  subnets            = var.subnet_ids
+  subnets            = var.alb_subnet_ids
   security_groups    = [aws_security_group.app.id]
 
 }
@@ -20,7 +20,7 @@ resource "aws_alb_target_group" "target_group" {
 
   health_check {
     interval            = 30
-    path                = "/index.html"
+    path                = "/"
     port                = 80
     healthy_threshold   = 5
     unhealthy_threshold = 2

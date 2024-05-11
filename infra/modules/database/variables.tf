@@ -43,7 +43,6 @@ variable "engine" {
 }
 
 
-
 variable "database_name" {
   description = "The name of the database in the RDS cluster"
   type        = string
@@ -104,4 +103,9 @@ variable "replica_count" {
   description = "The number of replicas to create for the RDS cluster"
   type        = number
   default     = 1
+}
+
+variable "dns_zone_id" {
+  description = "The ID of the DNS zone to use for the RDS cluster"
+  type        = string
 }

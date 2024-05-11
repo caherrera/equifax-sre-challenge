@@ -6,6 +6,8 @@ module "database" {
   source_security_group_id = aws_security_group.data-sg.id
   environment              = var.environment
   engine                   = "mysql"
+  port                     = 3306
+  dns_zone_id              = aws_route53_zone.zone.zone_id
 
 }
 
