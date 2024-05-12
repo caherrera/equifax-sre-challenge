@@ -21,6 +21,7 @@ module "compute" {
   min_size             = var.az_count
   desired_capacity     = var.az_count
   security_groups      = [data.aws_security_group.default.id, aws_security_group.data-sg.id]
+  data_security_groups = [aws_security_group.data-sg.id]
   environment          = var.environment
 }
 

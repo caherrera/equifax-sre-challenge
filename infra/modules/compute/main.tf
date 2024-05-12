@@ -54,7 +54,16 @@ resource "aws_launch_template" "lt_wp" {
     enabled = true
   }
 
-  tag_specifications {
+  user_data = base64encode(<<-EOF
+  sudo mkdir -p /var/www/wordpress/wp-content;
+  sudo chown -R www-data:www-data /var/www/wordpress/wp-content;
+  echo '${aws_efs_file_system.efs.id}:/wp-content /var/www/wordpress/wp-content nfs defaults,_netdev 0 0' | sudo tee -a /etc/fstab
+  sudo systemctl daemon-reload;
+  sudo mount /var/www/wordpress/wp-content;
+EOF
+  )
+
+tag_specifications {
     resource_type = "instance"
     tags = {
       Name = var.name
@@ -65,17 +74,13 @@ resource "aws_launch_template" "lt_wp" {
 
 }
 
-resource "aws_placement_group" "pg_wp" {
-  name     = "${var.name}-pg"
-  strategy = "cluster"
-}
+
 
 resource "aws_autoscaling_group" "asg_wp" {
   name                      = "${var.name}-asg"
   desired_capacity          = var.desired_capacity
   max_size                  = var.max_size
   min_size                  = var.min_size
-  placement_group           = aws_placement_group.pg_wp.name
   target_group_arns         = [aws_alb_target_group.target_group.arn]
   health_check_grace_period = 300
   termination_policies      = ["OldestInstance"]
