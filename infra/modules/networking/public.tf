@@ -33,12 +33,4 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public[count.index].id
 }
 
-## NAT
-resource "aws_nat_gateway" "ngw" {
-  count = local.count_with_nat
-  #   allocation_id = element(aws_eip.nat.*.id, count.index)
-  subnet_id         = element(aws_subnet.public_subnet.*.id, count.index)
-  tags = { Name = "ngw-${aws_subnet.public_subnet[count.index].availability_zone}" }
-  connectivity_type = "private"
-  depends_on        = [aws_internet_gateway.igw]
-}
+

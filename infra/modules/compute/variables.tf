@@ -112,3 +112,9 @@ variable "security_groups" {
   type        = list(string)
 }
 
+variable "data_security_groups" {
+  description = "List of security group IDs to associate with the instance."
+  default     = []
+  type        = list(string)
+}
+

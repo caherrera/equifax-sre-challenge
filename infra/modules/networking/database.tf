@@ -13,26 +13,26 @@ resource "aws_subnet" "database_subnet" {
     Name = "${var.name} Database Subnet ${data.aws_availability_zones.available.names[count.index]}"
   }, var.database_tags)
 }
-
-resource "aws_route_table" "database" {
-  count  = length(aws_nat_gateway.ngw)
-  vpc_id = local.vpc_id
-
-  tags = {
-    Name = "${var.name} Database RT ${data.aws_availability_zones.available.names[count.index]}"
-  }
-
-  route {
-    nat_gateway_id = aws_nat_gateway.ngw[count.index].id
-    cidr_block     = "0.0.0.0/0"
-  }
-}
-
-resource "aws_route_table_association" "database" {
-  count          = length(aws_route_table.database)
-  subnet_id      = element(aws_subnet.database_subnet.*.id, count.index)
-  route_table_id = aws_route_table.database[count.index].id
-}
+#
+# resource "aws_route_table" "database" {
+#   count  = length(aws_nat_gateway.ngw)
+#   vpc_id = local.vpc_id
+#
+#   tags = {
+#     Name = "${var.name} Database RT ${data.aws_availability_zones.available.names[count.index]}"
+#   }
+#
+#   route {
+#     nat_gateway_id = aws_nat_gateway.ngw[count.index].id
+#     cidr_block     = "0.0.0.0/0"
+#   }
+# }
+#
+# resource "aws_route_table_association" "database" {
+#   count          = length(aws_route_table.database)
+#   subnet_id      = element(aws_subnet.database_subnet.*.id, count.index)
+#   route_table_id = aws_route_table.database[count.index].id
+# }
 
 resource "aws_db_subnet_group" "database" {
   name       = "database_subnet_group"

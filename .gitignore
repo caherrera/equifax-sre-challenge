@@ -1,3 +1,4 @@
 .envrc
 .idea
 .vagrant
+/wp-config.php
