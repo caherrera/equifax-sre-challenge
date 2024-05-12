@@ -35,7 +35,22 @@ La arquitectura de la infraestructura se muestra en la siguiente imagen:
 
 ![Arquitectura](images/arquitectura.png)
 
+## Requerimientos
+
+- Crear una cuenta en Terraform Cloud (para el backend storage)
+- Crear un usuario en AWS con permisos de administrador
+- Configurar las credenciales de AWS en el archivo `~/.aws/credentials` o crear un archivo `.envrc` con las siguientes variables:
+
+```bash
+export AWS_ACCESS_KEY_ID=""
+export AWS_SECRET_ACCESS_KEY=""
+export AWS_REGION=""
+export TF_TOKEN_app_terraform_io=""
+
+```
+
 ## Implementación
+
 
 Para la implementación de la infraestructura se deben seguir los siguientes pasos:
 
@@ -60,3 +75,5 @@ make all
 cd infra
 make all
 ```
+
+
